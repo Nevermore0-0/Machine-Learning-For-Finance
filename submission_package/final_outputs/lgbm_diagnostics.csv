@@ -1,0 +1,16 @@
+year,n_train,source,feature_importance_top3
+2010,0,skipped,
+2011,154218,trained,"rank_piot_norm_lag1(530), rank_vol20(447), rank_vol60(323)"
+2012,319495,trained,"rank_vol20(574), rank_r_id_1d(475), rank_piot_norm_lag1(446)"
+2013,485361,trained,"rank_vol20(564), rank_r_id_1d(542), rank_vol60(493)"
+2014,669512,trained,"rank_vol20(606), rank_r_id_1d(510), rank_vol60(459)"
+2015,873778,trained,"rank_vol20(637), rank_r_id_1d(580), rank_piot_norm_lag1(487)"
+2016,1084968,trained,"rank_vol20(702), rank_r_id_1d(604), rank_piot_norm_lag1(522)"
+2017,1303071,trained,"rank_vol20(705), rank_r_id_1d(650), rank_piot_norm_lag1(517)"
+2018,1526129,trained,"rank_vol20(734), rank_piot_norm_lag1(691), rank_r_id_1d(631)"
+2019,1760879,trained,"rank_vol20(755), rank_r_id_1d(642), rank_piot_norm_lag1(556)"
+2020,1997623,trained,"rank_vol20(767), rank_r_id_1d(702), rank_piot_norm_lag1(602)"
+2021,2224116,trained,"rank_vol20(711), rank_r_id_1d(698), rank_piot_norm_lag1(574)"
+2022,2467279,trained,"rank_vol20(717), rank_r_id_1d(698), rank_vol60(512)"
+2023,2709667,trained,"rank_r_id_1d(715), rank_vol20(712), rank_piot_norm_lag1(623)"
+2024,2951342,trained,"rank_vol20(787), rank_r_id_1d(690), rank_piot_norm_lag1(542)"

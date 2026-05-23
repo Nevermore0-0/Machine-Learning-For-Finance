@@ -27,6 +27,55 @@ def sharpe_ratio(returns: pd.Series) -> float:
     return float(returns.mean() / returns.std(ddof=1) * np.sqrt(252.0))
 
 
+def sharpe_ratio_lo_corrected(returns: pd.Series, max_lag: int = 5) -> float:
+    """Lo (2002) autocorrelation-corrected Sharpe ratio.
+
+    Adjusts the annualised Sharpe for serial correlation in daily returns
+    up to ``max_lag`` lags. See Lo, "The Statistics of Sharpe Ratios",
+    Financial Analysts Journal, 2002.
+    """
+    returns = returns.dropna()
+    n = len(returns)
+    if n < max_lag + 10:
+        return np.nan
+    mu = float(returns.mean())
+    sigma = float(returns.std(ddof=1))
+    if sigma == 0:
+        return np.nan
+
+    # Compute autocorrelation correction factor
+    rho_sum = 0.0
+    centred = (returns - mu).values
+    var = float(np.dot(centred, centred) / n)
+    if var == 0:
+        return np.nan
+    for k in range(1, max_lag + 1):
+        rho_k = float(np.dot(centred[k:], centred[:-k]) / (n * var))
+        rho_sum += (max_lag + 1 - k) * rho_k
+
+    # eta(q) = q * (1 + 2 * sum_k (1 - k/q) * rho_k)  where q = 252
+    q = 252.0
+    eta = q * (1.0 + 2.0 * rho_sum)
+    if eta <= 0:
+        return np.nan
+
+    sr_annual = mu / sigma * np.sqrt(eta)
+    return float(sr_annual)
+
+
+def top_pct_concentration(returns: pd.Series, pct: float = 0.05) -> float:
+    """Fraction of total cumulative return from the top ``pct`` days."""
+    returns = returns.dropna()
+    if returns.empty:
+        return np.nan
+    total = float(returns.sum())
+    if total == 0:
+        return np.nan
+    n_top = max(1, int(np.ceil(len(returns) * pct)))
+    top_sum = float(returns.nlargest(n_top).sum())
+    return top_sum / total
+
+
 def max_drawdown(returns: pd.Series) -> float:
     returns = returns.fillna(0.0)
     wealth = (1.0 + returns).cumprod()

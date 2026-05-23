@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Close-to-Open Overnight Equity Strategy &mdash; Final Report</title>
+    <style>
+        /* ========== BASE RESET & TYPOGRAPHY ========== */
+        *, *::before, *::after { box-sizing: border-box; }
+
+        :root {
+            --imperial-blue: #002147;
+            --imperial-light: #003E74;
+            --accent-teal: #0091B3;
+            --text-primary: #1a1a1a;
+            --text-secondary: #4a4a4a;
+            --border-color: #c0c0c0;
+            --bg-light: #f7f8fa;
+            --bg-table-header: #e8ecf1;
+            --positive: #1a7a3a;
+            --negative: #b91c1c;
+        }
+
+        html {
+            font-size: 11pt;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Georgia", "Times New Roman", "Palatino Linotype", serif;
+            line-height: 1.65;
+            color: var(--text-primary);
+            background: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 40px 50px;
+        }
+
+        /* ========== HEADINGS ========== */
+        h1, h2, h3, h4 {
+            font-family: "Helvetica Neue", "Arial", "Calibri", sans-serif;
+            color: var(--imperial-blue);
+            margin-top: 1.8em;
+            margin-bottom: 0.5em;
+            line-height: 1.25;
+        }
+
+        h1 {
+            font-size: 2rem;
+            border-bottom: 3px solid var(--imperial-blue);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 1.45rem;
+            border-bottom: 1.5px solid var(--border-color);
+            padding-bottom: 6px;
+        }
+
+        h3 {
+            font-size: 1.15rem;
+            color: var(--imperial-light);
+        }
+
+        h4 {
+            font-size: 1.0rem;
+            font-style: italic;
+        }
+
+        /* ========== COVER PAGE ========== */
+        .cover {
+            text-align: center;
+            padding: 80px 20px 60px 20px;
+            page-break-after: always;
+        }
+
+        .cover .institution {
+            font-family: "Helvetica Neue", "Arial", sans-serif;
+            font-size: 1.1rem;
+            color: var(--imperial-light);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .cover .department {
+            font-family: "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 50px;
+        }
+
+        .cover h1 {
+            font-size: 2.2rem;
+            border: none;
+            margin-bottom: 10px;
+        }
+
+        .cover .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 50px;
+            font-style: italic;
+        }
+
+        .cover .meta {
+            font-family: "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.9;
+        }
+
+        .cover .meta strong {
+            color: var(--text-primary);
+        }
+
+        .cover .rule {
+            width: 120px;
+            border: none;
+            border-top: 2px solid var(--imperial-blue);
+            margin: 30px auto;
+        }
+
+        /* ========== TABLE OF CONTENTS ========== */
+        .toc {
+            page-break-after: always;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .toc > ul > li {
+            margin-bottom: 6px;
+        }
+
+        .toc li {
+            font-family: "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.9;
+        }
+
+        .toc li a {
+            text-decoration: none;
+            color: var(--imperial-blue);
+        }
+
+        .toc li a:hover {
+            text-decoration: underline;
+        }
+
+        .toc .toc-l2 {
+            padding-left: 22px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .toc .toc-l2 a {
+            color: var(--text-secondary);
+        }
+
+        /* ========== PARAGRAPHS & LISTS ========== */
+        p {
+            margin: 0.7em 0;
+            text-align: justify;
+            hyphens: auto;
+        }
+
+        ul, ol {
+            margin: 0.5em 0 0.5em 1.2em;
+        }
+
+        li {
+            margin-bottom: 3px;
+        }
+
+        /* ========== TABLES ========== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2em 0;
+            font-size: 0.92rem;
+            page-break-inside: avoid;
+        }
+
+        table caption {
+            font-family: "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--imperial-blue);
+            text-align: left;
+            margin-bottom: 6px;
+            caption-side: top;
+        }
+
+        thead th {
+            background: var(--bg-table-header);
+            font-family: "Helvetica Neue", "Arial", sans-serif;
+            font-weight: 600;
+            font-size: 0.88rem;
+            text-align: center;
+            padding: 7px 10px;
+            border: 1px solid var(--border-color);
+            color: var(--imperial-blue);
+        }
+
+        tbody td {
+            padding: 5px 10px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        tbody tr:nth-child(even) {
+            background: var(--bg-light);
+        }
+
+        td.left, th.left {
+            text-align: left;
+        }
+
+        td.right, th.right {
+            text-align: right;
+        }
+
+        .positive { color: var(--positive); font-weight: 600; }
+        .negative { color: var(--negative); font-weight: 600; }
+
+        /* ========== FIGURES ========== */
+        figure {
+            margin: 1.5em 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 2px;
+        }
+
+        figcaption {
+            font-family: "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* ========== CALLOUT BOXES ========== */
+        .callout {
+            background: var(--bg-light);
+            border-left: 4px solid var(--accent-teal);
+            padding: 12px 18px;
+            margin: 1.2em 0;
+            font-size: 0.93rem;
+        }
+
+        .callout-warn {
+            border-left-color: #d97706;
+            background: #fffbeb;
+        }
+
+        .callout strong {
+            font-family: "Helvetica Neue", "Arial", sans-serif;
+        }
+
+        /* ========== CODE / MATH ========== */
+        code {
+            font-family: "SF Mono", "Menlo", "Consolas", monospace;
+            font-size: 0.87em;
+            background: #f0f2f5;
+            padding: 1px 5px;
+            border-radius: 3px;
+        }
+
+        .equation {
+            text-align: center;
+            margin: 1em 0;
+            font-style: italic;
+        }
+
+        /* ========== PRINT STYLES ========== */
+        @media print {
+            html { font-size: 10pt; }
+            .container { padding: 0; max-width: 100%; }
+            h2 { page-break-before: always; }
+            h2:first-of-type { page-break-before: avoid; }
+            .cover { page-break-after: always; }
+            .toc { page-break-after: always; }
+            .no-break { page-break-inside: avoid; }
+            a { color: var(--imperial-blue) !important; text-decoration: none !important; }
+        }
+
+        /* ========== SECTION NUMBERING ========== */
+        .section-num {
+            color: var(--accent-teal);
+            margin-right: 6px;
+        }
+
+        /* ========== FOOTNOTES ========== */
+        .footnote {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            border-top: 1px solid #ddd;
+            margin-top: 2em;
+            padding-top: 0.8em;
+        }
+
+        .footnote p {
+            margin: 0.3em 0;
+        }
+
+        /* ========== FEATURE TABLE SPECIAL ========== */
+        .feature-group {
+            font-weight: 700;
+            background: var(--bg-table-header) !important;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+<!-- ================================================================== -->
+<!--                          COVER PAGE                                -->
+<!-- ================================================================== -->
+<div class="cover">
+    <div class="institution">Imperial College London</div>
+    <div class="department">Department of Mathematics &middot; MSc Machine Learning and Finance</div>
+    <hr class="rule">
+    <h1>Close-to-Open (C2O) Overnight Equity Strategy</h1>
+    <div class="subtitle">Machine Learning in Finance &mdash; Group Coursework</div>
+    <hr class="rule">
+    <div class="meta">
+        <strong>Module:</strong> Machine Learning in Finance<br>
+        <strong>Strategy universe:</strong> US Large-Cap Equities, 2010&ndash;2024<br>
+        <strong>AUM scenarios:</strong> $50M &middot; $250M &middot; $1B<br>
+        <strong>Academic Year:</strong> 2024&ndash;25
+    </div>
+</div>
+
+<!-- ================================================================== -->
+<!--                       TABLE OF CONTENTS                            -->
+<!-- ================================================================== -->
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        <li><a href="#sec1">1. Executive Summary</a></li>
+        <li><a href="#sec2">2. Data Panel Construction</a>
+            <ul>
+                <li class="toc-l2"><a href="#sec2-1">2.1 Data Sources and Survivorship-Bias Treatment</a></li>
+                <li class="toc-l2"><a href="#sec2-2">2.2 Return Decomposition and Reconciliation</a></li>
+                <li class="toc-l2"><a href="#sec2-3">2.3 Earnings-Announcement Timing (AMC / BMO)</a></li>
+                <li class="toc-l2"><a href="#sec2-4">2.4 Short-Interest and Point-in-Time Lag</a></li>
+                <li class="toc-l2"><a href="#sec2-5">2.5 Universe Evolution</a></li>
+                <li class="toc-l2"><a href="#sec2-6">2.6 Stylised Fact: Overnight vs. Intraday Returns</a></li>
+            </ul>
+        </li>
+        <li><a href="#sec3">3. Filters and the Eligible Set</a>
+            <ul>
+                <li class="toc-l2"><a href="#sec3-1">3.1 Filter Thresholds</a></li>
+                <li class="toc-l2"><a href="#sec3-2">3.2 Eligible-Set Composition</a></li>
+                <li class="toc-l2"><a href="#sec3-3">3.3 Binding Constraints at Different AUM Levels</a></li>
+            </ul>
+        </li>
+        <li><a href="#sec4">4. Borrow Treatment</a>
+            <ul>
+                <li class="toc-l2"><a href="#sec4-1">4.1 Hard-to-Borrow Proxy Methodology</a></li>
+                <li class="toc-l2"><a href="#sec4-2">4.2 Tier Definitions and Cost Rates</a></li>
+                <li class="toc-l2"><a href="#sec4-3">4.3 Gross-to-Net Sharpe Impact</a></li>
+                <li class="toc-l2"><a href="#sec4-4">4.4 External Validation Limitations</a></li>
+            </ul>
+        </li>
+        <li><a href="#sec5">5. Alpha Model</a>
+            <ul>
+                <li class="toc-l2"><a href="#sec5-1">5.1 Feature Inventory and Point-in-Time Verification</a></li>
+                <li class="toc-l2"><a href="#sec5-2">5.2 Model Class: Linear Combination</a></li>
+                <li class="toc-l2"><a href="#sec5-3">5.3 Machine Learning Comparison: LightGBM</a></li>
+                <li class="toc-l2"><a href="#sec5-4">5.4 Information Coefficient Analysis</a></li>
+                <li class="toc-l2"><a href="#sec5-5">5.5 Feature Ablation</a></li>
+                <li class="toc-l2"><a href="#sec5-6">5.6 Weak Regime Analysis</a></li>
+            </ul>
+        </li>
+        <li><a href="#sec6">6. Portfolio Construction and Performance</a>
+            <ul>
+                <li class="toc-l2"><a href="#sec6-1">6.1 Basket Sizing and Construction Rules</a></li>
+                <li class="toc-l2"><a href="#sec6-2">6.2 Headline Performance at Three AUM Levels</a></li>
+                <li class="toc-l2"><a href="#sec6-3">6.3 Gross-to-Net Decomposition</a></li>
+                <li class="toc-l2"><a href="#sec6-4">6.4 Stress Windows and Drawdowns</a></li>
+            </ul>
+        </li>
+        <li><a href="#sec7">7. Robustness</a>
+            <ul>
+                <li class="toc-l2"><a href="#sec7-1">7.1 Lo's Autocorrelation Correction</a></li>
+                <li class="toc-l2"><a href="#sec7-2">7.2 Year-by-Year Analysis</a></li>
+                <li class="toc-l2"><a href="#sec7-3">7.3 Capacity Constraints</a></li>
+                <li class="toc-l2"><a href="#sec7-4">7.4 Honest Assessment of Borrow Assumptions</a></li>
+            </ul>
+        </li>
+        <li><a href="#sec8">8. Limitations and Conclusion</a></li>
+    </ul>
+</div>
+
+<!-- ================================================================== -->
+<!--                    1. EXECUTIVE SUMMARY                            -->
+<!-- ================================================================== -->
+<h2 id="sec1"><span class="section-num">1</span> Executive Summary</h2>
+
+<p>
+This report presents the design, implementation, and evaluation of a close-to-open (C2O) overnight equity strategy applied to a survivorship-bias-free universe of approximately 988 US large-cap names per year over the period January 2010 to December 2024. The strategy exploits the well-documented overnight return premium&mdash;the empirical regularity that equity returns accrue disproportionately during the non-trading session&mdash;by combining 27 cross-sectional features into a linear alpha score and constructing a dollar-neutral long-short portfolio each evening at the close.
+</p>
+
+<p>
+At the base-case AUM of $250M, the strategy delivers a net annualised return of <strong>7.31%</strong> with a Sharpe ratio of <strong>1.445</strong> after accounting for commissions (0.5 bps per leg), slippage (1.5 bps per leg), and a tiered borrow-cost proxy. Maximum drawdown is contained at &minus;10.19%. The gross Sharpe of 3.112 degrades substantially to net owing to the high round-trip cost burden inherent in a daily-rebalance overnight strategy: slippage alone accounts for 1.137 Sharpe units of drag at this AUM level. The strategy retains a Sharpe above 1.29 at both $50M and $1B, though at $1B the net return compresses to 3.50% as the participation-rate constraint limits position sizes.
+</p>
+
+<p>
+Feature ablation confirms that the short-term return-reversal group is the dominant alpha source, with its removal collapsing the Sharpe from 1.445 to &minus;1.114. A LightGBM tree-based model was also evaluated as a machine-learning benchmark; its predictive IC is comparable to the linear model, but it does not deliver material performance improvement after costs, reinforcing the observation that in this setting model complexity is less important than robust feature engineering and disciplined cost control.
+</p>
+
+<!-- ================================================================== -->
+<!--              2. DATA PANEL CONSTRUCTION                            -->
+<!-- ================================================================== -->
+<h2 id="sec2"><span class="section-num">2</span> Data Panel Construction</h2>
+
+<h3 id="sec2-1">2.1 Data Sources and Survivorship-Bias Treatment</h3>
+
+<p>
+The data panel is constructed from the course-provided dataset, which supplies daily close-to-close, close-to-open (overnight), and open-to-close (intraday) returns alongside daily volume, market capitalisation, and fundamental fields for US equities. Crucially, the universe is not restricted to currently listed names: delisted, acquired, and bankrupt firms remain in the panel through their final trading date, thereby avoiding survivorship bias. The universe is frozen at the start of each calendar year by selecting the top names ranked by market capitalisation, yielding approximately 988 names per year. As a result, the median year-start market capitalisation grows from roughly $2.5 billion in 2010 to approximately $13 billion in 2024, reflecting secular market appreciation.
+</p>
+
+<p>
+Short-interest data&mdash;days-to-cover normalised (DTCN), days of short interest (DSI), and the change in days-to-cover (DDTCN)&mdash;are sourced from the same panel with bimonthly frequency. Fundamental accounting items (gross profit margin, asset turnover, net debt-to-equity, and Piotroski-related scores) are mapped at quarterly frequency with a one-quarter lag to ensure point-in-time compliance. Analyst-revision signals (standardised unexpected earnings, EPS revisions, and forward-estimate changes) are similarly lagged by one period.
+</p>
+
+<h3 id="sec2-2">2.2 Return Decomposition and Reconciliation</h3>
+
+<p>
+A foundational data-quality check verifies the return identity:
+</p>
+
+<div class="equation">
+(1 + r<sub>overnight</sub>) &times; (1 + r<sub>intraday</sub>) &minus; 1 = r<sub>close-to-close</sub>
+</div>
+
+<p>
+This identity was tested exhaustively across <strong>5,469,968 stock-days</strong>, with zero failures at a tolerance of 10<sup>&minus;8</sup>. The perfect reconciliation confirms that the return series are internally consistent and that no spurious gap exists between the overnight and intraday components. This check is important because any misalignment between return legs would introduce phantom P&amp;L into the backtest and undermine the economic interpretation of the overnight premium.
+</p>
+
+<figure>
+    <img src="../outputs/figures/equal_weight_return_decomposition.png" alt="Equal-weight return decomposition">
+    <figcaption><strong>Figure 1.</strong> Cumulative return decomposition of an equal-weight portfolio into overnight (close-to-open) and intraday (open-to-close) components, 2010&ndash;2024. The divergence between the two legs confirms the stylised fact that the bulk of equity returns accrue overnight.</figcaption>
+</figure>
+
+<h3 id="sec2-3">2.3 Earnings-Announcement Timing (AMC / BMO)</h3>
+
+<p>
+Earnings announcements present a particular hazard for overnight strategies because the magnitude and directionality of the post-announcement return can overwhelm the alpha signal. The strategy excludes any stock from the eligible set on a three-day window around its earnings report date. The precise mapping depends on whether the announcement occurs after the market close (AMC) or before the market open (BMO):
+</p>
+
+<div class="callout no-break">
+    <strong>AMC example &mdash; MOS, 5 January 2010.</strong> The company reports after the close on calendar date 2010-01-05. The strategy trading date for this overnight is 2010-01-05 (enter at the close of 5 Jan, exit at the open of 6 Jan). The exclusion window spans strategy trading dates 2010-01-04 through 2010-01-06, ensuring the position is not entered on the evening of the report nor on the two adjacent evenings.
+</div>
+
+<div class="callout no-break">
+    <strong>BMO example &mdash; RPM, 6 January 2010.</strong> The company reports before the open on calendar date 2010-01-06. The strategy trading date maps to 2010-01-05 (the overnight that straddles the announcement). The exclusion window again spans 2010-01-04 through 2010-01-06.
+</div>
+
+<p>
+In both cases, the three-day exclusion window is centred on the strategy trading date of the announcement. This conservative approach sacrifices some eligible stock-days (approximately 11,905 stock-days lost to the <code>EARN_WINDOW</code> filter in 2024 alone) but eliminates the risk of earnings-driven outliers contaminating the P&amp;L.
+</p>
+
+<h3 id="sec2-4">2.4 Short-Interest and Point-in-Time Lag</h3>
+
+<p>
+Short-interest data from FINRA is published on a bimonthly settlement-date calendar, with the actual publication date lagging the settlement date by approximately 10 business days. To guarantee point-in-time compliance, every short-interest field used in the alpha model carries a <code>_lag1</code> suffix, meaning the feature value available on decision day <em>t</em> is the most recent publication that precedes day <em>t</em>&minus;1. This one-trading-day decision lag is a conservative choice; in practice, the publication delay is longer, providing an additional buffer. The strategy does not attempt to reconstruct raw FINRA settlement-to-publication date mappings, instead relying on the lagged fields already present in the provided panel.
+</p>
+
+<h3 id="sec2-5">2.5 Universe Evolution</h3>
+
+<p>
+The universe is refreshed at each year-start by ranking all available names by market capitalisation and retaining approximately the top 988. Because the universe is frozen for the entire calendar year, no name enters mid-year due to an IPO or exits mid-year due to a merger&mdash;the set is stable within each vintage. Across 15 years, the rising tide of market capitalisation means that the later vintages contain larger and more liquid names, which has implications for both the capacity analysis (Section 7) and the borrow-cost proxy (Section 4).
+</p>
+
+<figure>
+    <img src="../outputs/figures/universe_eligible_count.png" alt="Universe eligible count over time">
+    <figcaption><strong>Figure 6.</strong> Number of eligible names over time after all filters are applied. The eligible set generally contains 600&ndash;700 names per day, with periodic contractions during earnings seasons when the EARN_WINDOW filter removes a larger fraction of names.</figcaption>
+</figure>
+
+<h3 id="sec2-6">2.6 Stylised Fact: Overnight vs. Intraday Returns</h3>
+
+<p>
+Figure 1 illustrates the foundational stylised fact motivating this strategy. Over the full 2010&ndash;2024 sample, an equal-weight long-only portfolio earns the majority of its cumulative return during the overnight session, while the intraday session contributes relatively little&mdash;and at times erodes value. This observation, first documented by Cliff, Cooper, and Gulen (2008) and later studied extensively in the academic literature, is attributed to a combination of inventory risk premia demanded by market makers who carry overnight positions, information asymmetry that is partially resolved at the open, and systematic buying pressure from index rebalancing and mutual-fund flows that tend to concentrate at the close. The C2O strategy aims to harvest this premium more efficiently through cross-sectional stock selection rather than simple equal-weight exposure.
+</p>
+
+<!-- ================================================================== -->
+<!--              3. FILTERS AND ELIGIBLE SET                           -->
+<!-- ================================================================== -->
+<h2 id="sec3"><span class="section-num">3</span> Filters and the Eligible Set</h2>
+
+<h3 id="sec3-1">3.1 Filter Thresholds</h3>
+
+<p>
+Before alpha scoring, each stock-day is subjected to a battery of eligibility filters. A stock-day passes only if it satisfies all criteria simultaneously; failure on any single dimension renders it ineligible. The filters, listed in order of binding frequency, are:
+</p>
+
+<table>
+    <caption>Table 1. Eligibility filter definitions</caption>
+    <thead>
+        <tr>
+            <th class="left">Filter</th>
+            <th class="left">Criterion</th>
+            <th class="left">Rationale</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="left"><code>MCAP_FAIL</code></td>
+            <td class="left">Market cap below universe threshold</td>
+            <td class="left">Ensures sufficient liquidity and institutional relevance</td>
+        </tr>
+        <tr>
+            <td class="left"><code>EARN_WINDOW</code></td>
+            <td class="left">Within 3-day earnings window</td>
+            <td class="left">Avoids earnings-driven outlier returns</td>
+        </tr>
+        <tr>
+            <td class="left"><code>ADV_FAIL</code></td>
+            <td class="left">20-day average daily volume too low</td>
+            <td class="left">Prevents illiquid positions that cannot be exited</td>
+        </tr>
+        <tr>
+            <td class="left"><code>VOL_FAIL</code></td>
+            <td class="left">20-day realised volatility outside acceptable range</td>
+            <td class="left">Excludes extremely low-vol (no signal) and extreme-vol names</td>
+        </tr>
+        <tr>
+            <td class="left"><code>DATA_FAIL</code></td>
+            <td class="left">Missing price, volume, or return data</td>
+            <td class="left">Ensures complete data for alpha computation</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="sec3-2">3.2 Eligible-Set Composition</h3>
+
+<p>
+Table 2 reports the filter breakdown for the calendar year 2024, representative of the late-sample regime. The market-cap filter is by far the most binding constraint, removing 156,668 stock-days&mdash;these correspond to names that were in the original universe at year-start but whose market cap fell below the threshold intra-year, or to boundary cases near the cap cutoff. The earnings window removes 11,905 stock-days, while ADV, volatility, and data filters are comparatively minor.
+</p>
+
+<table>
+    <caption>Table 2. Eligibility filter decomposition, 2024</caption>
+    <thead>
+        <tr>
+            <th class="left">Status</th>
+            <th>Stock-Days</th>
+            <th>Share (%)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="left">OK (eligible)</td>
+            <td class="positive">242,803</td>
+            <td>58.7%</td>
+        </tr>
+        <tr>
+            <td class="left">MCAP_FAIL</td>
+            <td>156,668</td>
+            <td>37.9%</td>
+        </tr>
+        <tr>
+            <td class="left">EARN_WINDOW</td>
+            <td>11,905</td>
+            <td>2.9%</td>
+        </tr>
+        <tr>
+            <td class="left">VOL_FAIL</td>
+            <td>1,306</td>
+            <td>0.3%</td>
+        </tr>
+        <tr>
+            <td class="left">ADV_FAIL</td>
+            <td>1,034</td>
+            <td>0.2%</td>
+        </tr>
+        <tr>
+            <td class="left">DATA_FAIL</td>
+            <td>1,000</td>
+            <td>0.2%</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>
+Of the approximately 988 names available each year, the eligible set on a typical day contains roughly 600&ndash;700 names after all filters are applied. This is comfortably above the minimum threshold required for meaningful cross-sectional ranking (the strategy selects the top and bottom 3%, i.e., approximately 18&ndash;21 names per side from a pool of 600).
+</p>
+
+<h3 id="sec3-3">3.3 Binding Constraints at Different AUM Levels</h3>
+
+<p>
+The eligibility filters themselves are invariant to AUM; the same names pass regardless of fund size. However, the <em>portfolio-construction</em> constraints that interact with AUM&mdash;specifically, the 5% ADV20 participation cap&mdash;become increasingly binding as AUM rises. At $50M, the participation cap rarely binds because the dollar allocation per name (approximately $50M &divide; 50 names = $1M per name) is small relative to the median ADV. At $1B, the allocation per name exceeds $20M, and the 5% ADV cap forces the optimiser to reduce position sizes in less liquid names or to expand the basket, diluting alpha concentration. This mechanism is the primary driver of the Sharpe compression observed when scaling from $250M (Sharpe 1.445) to $1B (Sharpe 1.293).
+</p>
+
+<!-- ================================================================== -->
+<!--              4. BORROW TREATMENT                                   -->
+<!-- ================================================================== -->
+<h2 id="sec4"><span class="section-num">4</span> Borrow Treatment</h2>
+
+<h3 id="sec4-1">4.1 Hard-to-Borrow Proxy Methodology</h3>
+
+<p>
+In the absence of a live securities-lending dataset, the strategy constructs a deterministic hard-to-borrow (HTB) proxy based on observable short-interest metrics. The proxy classifies each short position into one of three cost tiers using the most recently available (lagged) short-interest fields. This approach is a simplification of the true borrow market, which is negotiated bilaterally with prime brokers and varies by counterparty, but it provides a systematic and reproducible cost estimate.
+</p>
+
+<h3 id="sec4-2">4.2 Tier Definitions and Cost Rates</h3>
+
+<table>
+    <caption>Table 3. Borrow-cost tier definitions</caption>
+    <thead>
+        <tr>
+            <th class="left">Tier</th>
+            <th>Rate (bps p.a.)</th>
+            <th class="left">Trigger condition</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="left"><strong>Tier A</strong> (General Collateral)</td>
+            <td>40</td>
+            <td class="left">Default &mdash; none of the below conditions met</td>
+        </tr>
+        <tr>
+            <td class="left"><strong>Tier B</strong> (Warm)</td>
+            <td>200</td>
+            <td class="left">DSI &ge; 0.08 <em>or</em> DTCN &ge; 5.0 <em>or</em> DDTCN &ge; 1.0</td>
+        </tr>
+        <tr>
+            <td class="left"><strong>Tier C</strong> (Hard)</td>
+            <td>800</td>
+            <td class="left">DSI &ge; 0.15 <em>or</em> DTCN &ge; 10.0 <em>or</em> (DSI &ge; 0.10 <em>and</em> DDTCN &ge; 1.5)</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>
+<figure>
+    <img src="../outputs/figures/borrow_tier_distribution.png" alt="Borrow tier distribution">
+    <figcaption><strong>Figure 7.</strong> Distribution of short-side positions across borrow tiers over time. The majority of short positions fall in Tier A (general collateral), with Tier B and Tier C positions representing a smaller but non-trivial fraction, particularly during episodes of elevated short interest.</figcaption>
+</figure>
+
+<p>
+No hard exclusion is applied: even Tier C names remain eligible for shorting, but the elevated borrow cost is fully deducted from the overnight P&amp;L. This design choice reflects the view that hard-to-borrow names frequently carry strong short alpha (precisely because they are heavily shorted), and excluding them entirely would sacrifice signal. The cost deduction, applied daily as <em>rate &times; notional &divide; 252</em>, provides a conservative drag estimate.
+</p>
+
+<h3 id="sec4-3">4.3 Gross-to-Net Sharpe Impact</h3>
+
+<p>
+The borrow cost contributes the smallest component of the total cost drag but is non-trivial. At the $250M AUM level, borrow costs account for 0.152 Sharpe units of degradation from gross to net. This is modest compared to slippage (1.137 units) and commission (0.378 units), but it is not negligible&mdash;particularly in periods when the short book is tilted toward Tier B and Tier C names, as occurs during episodes of elevated short interest (e.g., parts of 2020&ndash;2021).
+</p>
+
+<h3 id="sec4-4">4.4 External Validation Limitations</h3>
+
+<div class="callout callout-warn">
+    <strong>Limitation.</strong> No independent external borrow-fee or locate-rate dataset is available to validate the proxy tier thresholds. The 40/200/800 bps rates are chosen to be broadly consistent with industry norms for general collateral, warm, and hard-to-borrow categories, respectively, but the actual borrow landscape is idiosyncratic and time-varying. The absence of external validation means that the net Sharpe figures should be interpreted as conditional on these assumed rates. If true borrow costs were systematically higher (as they might be for a fund without established prime-brokerage relationships), the net Sharpe would be lower.
+</div>
+
+<!-- ================================================================== -->
+<!--              5. ALPHA MODEL                                        -->
+<!-- ================================================================== -->
+<h2 id="sec5"><span class="section-num">5</span> Alpha Model</h2>
+
+<h3 id="sec5-1">5.1 Feature Inventory and Point-in-Time Verification</h3>
+
+<p>
+The alpha model consumes 27 rank-transformed features organised into six thematic groups. Every feature is computed as a cross-sectional percentile rank on each day, ensuring uniform marginal distributions and robustness to outliers. Table 4 enumerates the full feature set with its manually assigned prior weight (sign and magnitude) and group membership.
+</p>
+
+<table>
+    <caption>Table 4. Full feature inventory (27 rank features, 6 groups)</caption>
+    <thead>
+        <tr>
+            <th class="left">Group</th>
+            <th class="left">Feature</th>
+            <th>Prior Weight</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="feature-group"><td class="left" colspan="3">1. Return / Reversal</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_r_on_1d</code></td><td>&minus;0.60</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_r_on_5d</code></td><td>&minus;0.35</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_r_id_1d</code></td><td>&minus;0.35</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_ret_cc_5d</code></td><td>&minus;0.35</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_ret_cc_20d</code></td><td>&minus;0.20</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_ret_cc_60d</code></td><td>+0.15</td></tr>
+
+        <tr class="feature-group"><td class="left" colspan="3">2. Risk / Liquidity / Size</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_vol20</code></td><td>&minus;0.35</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_vol60</code></td><td>&minus;0.20</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_amihud20</code></td><td>&minus;0.25</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_adv20_log</code></td><td>+0.15</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_market_cap_log</code></td><td>+0.10</td></tr>
+
+        <tr class="feature-group"><td class="left" colspan="3">3. Fundamental / Value / Quality</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_piot_norm_lag1</code></td><td>+0.25</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_gross_profit_margin_lag1</code></td><td>+0.15</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_asset_turnover_ratio_lag1</code></td><td>+0.10</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_net_debt_to_equity_lag1</code></td><td>&minus;0.15</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_price_to_book_lag1</code></td><td>&minus;0.15</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_ev_to_ebit_lag1</code></td><td>&minus;0.10</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_final_score_lag1</code></td><td>+0.35</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_score_velocity_lag1</code></td><td>+0.15</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_momentum_score_lag1</code></td><td>+0.15</td></tr>
+
+        <tr class="feature-group"><td class="left" colspan="3">4. Earnings / Revision</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_sue_lag1</code></td><td>+0.25</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_deps_lag1</code></td><td>+0.25</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_reps1_lag1</code></td><td>+0.20</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_repsf4_lag1</code></td><td>+0.20</td></tr>
+
+        <tr class="feature-group"><td class="left" colspan="3">5. Short-Interest / Borrow</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_dsi_lag1</code></td><td>&minus;0.25</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_dtcn_lag1</code></td><td>&minus;0.25</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_ddtcn_lag1</code></td><td>&minus;0.10</td></tr>
+
+        <tr class="feature-group"><td class="left" colspan="3">6. Industry Return</td></tr>
+        <tr><td class="left"></td><td class="left"><code>rank_industry_return_lag1</code></td><td>+0.10</td></tr>
+    </tbody>
+</table>
+
+<p>
+All fundamental and short-interest features carry the <code>_lag1</code> suffix, confirming a minimum one-period publication lag. Return-based features (group 1) and risk/liquidity features (group 2) are computed from market data available at the close and therefore require no additional lag. Point-in-time integrity is verified programmatically: the promotion audit confirms that no future data leaks into the feature computation pipeline.
+</p>
+
+<h3 id="sec5-2">5.2 Model Class: Linear Combination</h3>
+
+<p>
+The alpha score is a linear combination of the 27 rank features. The weight vector is formed as a 50/50 blend of (a) the manually assigned prior weights shown in Table 4, and (b) a set of learned weights derived from the expanding-window correlation of each feature with the target variable. Formally:
+</p>
+
+<div class="equation">
+w<sub>j</sub> = 0.5 &times; w<sub>j</sub><sup>prior</sup> + 0.5 &times; w<sub>j</sub><sup>corr</sup>
+</div>
+
+<p>
+The target variable for the correlation-learning step is the <em>vol-scaled overnight return</em>:
+</p>
+
+<div class="equation">
+y<sub>i,t</sub> = r<sup>overnight</sup><sub>i,t+1</sub> &divide; (&sigma;<sub>i,20</sub> / &radic;252)
+</div>
+
+<p>
+where &sigma;<sub>i,20</sub> is the trailing 20-day realised volatility of stock <em>i</em>. Vol-scaling normalises the target so that the correlation step does not overweight high-volatility names whose raw overnight returns have larger variance.
+</p>
+
+<p>
+The walk-forward protocol uses an expanding window: to score year <em>Y</em>, the model trains on all available data prior to year <em>Y</em>. This ensures strict temporal separation between training and evaluation data. Weights are frozen after the development cutoff for held-out years, preventing any inadvertent in-sample optimisation of the final performance statistics.
+</p>
+
+<h3 id="sec5-3">5.3 Machine Learning Comparison: LightGBM</h3>
+
+<p>
+As a machine-learning benchmark, a LightGBM gradient-boosted tree model was trained on the same feature set using the same walk-forward protocol. The hyperparameters were set conservatively to limit overfitting: <code>num_leaves=31</code>, <code>max_depth=6</code>, <code>n_estimators=200</code>. The target and feature preprocessing were identical to the linear model.
+</p>
+
+<p>
+The LightGBM model produces a comparable cross-sectional IC to the linear model, indicating that the features carry roughly the same predictive information regardless of the model class. However, after portfolio construction and cost deduction, the LightGBM strategy does not materially outperform the linear model. This finding is consistent with the broader empirical observation that in low-signal-to-noise cross-sectional prediction tasks, the marginal benefit of nonlinearity is small relative to the cost of added variance. The linear model is preferred for its transparency, stability, and ease of interpretation.
+</p>
+
+<p>
+<figure>
+    <img src="../outputs/figures/ic_comparison_linear_vs_lgbm.png" alt="IC comparison: linear vs LightGBM">
+    <figcaption><strong>Figure 8.</strong> Rolling information coefficient comparison between the linear model and LightGBM. Both models produce similar IC trajectories, confirming that the predictive content resides in the features rather than the model class.</figcaption>
+</figure>
+
+<p>
+Importantly, the negative result is itself informative for a machine-learning course. It demonstrates that the choice of model class is secondary to the choice of features and the quality of the cost model. A sophisticated ML model applied to poor features will underperform a simple model applied to good features&mdash;and in this setting, the features are informative enough that a linear combination suffices.
+</p>
+
+<h3 id="sec5-4">5.4 Information Coefficient Analysis</h3>
+
+<p>
+The information coefficient (IC)&mdash;defined as the Spearman rank correlation between the alpha score and the subsequent overnight return&mdash;is the primary diagnostic for signal quality. Over the full 3,774-day sample, the strategy achieves:
+</p>
+
+<ul>
+    <li><strong>Mean IC:</strong> 0.029</li>
+    <li><strong>IC t-statistic:</strong> 9.93</li>
+</ul>
+
+<p>
+A t-statistic of 9.93 provides overwhelming statistical evidence that the alpha score carries predictive information for overnight returns. However, the IC itself is modest at 0.029&mdash;on any given day, the cross-sectional correlation between the alpha score and the realised overnight return is only about 3%. This is typical of equity cross-sectional factors: the signal is weak at the individual-stock level but reliable in aggregate across a diversified portfolio over many days.
+</p>
+
+<figure>
+    <img src="../outputs/figures/rolling_ic.png" alt="Rolling IC">
+    <figcaption><strong>Figure 2.</strong> 63-day rolling information coefficient (Spearman rank correlation between alpha score and subsequent overnight return), 2010&ndash;2024. The IC is persistently positive but exhibits meaningful time variation, with notable weakness in 2010 and 2022&ndash;2024.</figcaption>
+</figure>
+
+<p>
+Table 5 reports the IC by calendar year, revealing substantial time variation.
+</p>
+
+<table>
+    <caption>Table 5. Annual information coefficient, 2010&ndash;2024</caption>
+    <thead>
+        <tr>
+            <th>Year</th><th>IC</th><th>Interpretation</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>2010</td><td class="negative">&minus;0.035</td><td class="left">Negative IC &mdash; model actively harmful</td></tr>
+        <tr><td>2011</td><td class="positive">0.060</td><td class="left">Strong &mdash; post-crisis reversal regime</td></tr>
+        <tr><td>2012</td><td class="positive">0.044</td><td class="left">Above average</td></tr>
+        <tr><td>2013</td><td class="positive">0.067</td><td class="left">Strongest year in sample</td></tr>
+        <tr><td>2014</td><td>0.037</td><td class="left">Moderate</td></tr>
+        <tr><td>2015</td><td>0.029</td><td class="left">At full-sample mean</td></tr>
+        <tr><td>2016</td><td>0.034</td><td class="left">Moderate</td></tr>
+        <tr><td>2017</td><td>0.042</td><td class="left">Above average</td></tr>
+        <tr><td>2018</td><td>0.033</td><td class="left">Moderate</td></tr>
+        <tr><td>2019</td><td>0.040</td><td class="left">Above average</td></tr>
+        <tr><td>2020</td><td>0.036</td><td class="left">Resilient despite COVID volatility</td></tr>
+        <tr><td>2021</td><td>0.030</td><td class="left">At full-sample mean</td></tr>
+        <tr><td>2022</td><td class="negative">&minus;0.030</td><td class="left">Negative IC &mdash; rate-hiking regime</td></tr>
+        <tr><td>2023</td><td>0.017</td><td class="left">Below average</td></tr>
+        <tr><td>2024</td><td>0.005</td><td class="left">Near zero &mdash; signal decay</td></tr>
+    </tbody>
+</table>
+
+<p>
+Two years exhibit negative IC: 2010 and 2022. The 2010 result is attributed to the model's heavy reliance on short-term reversal in a post-crisis environment where momentum dominated; stocks that had fallen sharply continued to fall rather than reverting, inverting the reversal signal. The 2022 negative IC coincides with the Federal Reserve's aggressive rate-hiking cycle, during which traditional factor relationships were disrupted. Notably, despite the negative IC in 2022, the strategy posted its strongest net return that year (32.24% at $250M), suggesting that the alpha score&mdash;while poorly correlated cross-sectionally&mdash;was concentrated in the tails, which is where portfolio construction draws its positions.
+</p>
+
+<h3 id="sec5-5">5.5 Feature Ablation</h3>
+
+<p>
+To quantify the marginal contribution of each feature group, ablation tests were conducted at the $250M AUM level. Each group was removed in turn, and the full backtest was re-run with the remaining groups.
+</p>
+
+<table>
+    <caption>Table 6. Feature-group ablation at $250M AUM</caption>
+    <thead>
+        <tr>
+            <th class="left">Configuration</th>
+            <th>Net Sharpe</th>
+            <th>Change from Full</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="left"><strong>Full model (all groups)</strong></td>
+            <td class="positive"><strong>1.445</strong></td>
+            <td>&mdash;</td>
+        </tr>
+        <tr>
+            <td class="left">Remove return/reversal</td>
+            <td class="negative">&minus;1.114</td>
+            <td class="negative">&minus;2.559</td>
+        </tr>
+        <tr>
+            <td class="left">Remove risk/liquidity/size</td>
+            <td>1.144</td>
+            <td class="negative">&minus;0.301</td>
+        </tr>
+        <tr>
+            <td class="left">Remove fundamental/value/quality</td>
+            <td>1.407</td>
+            <td>&minus;0.038</td>
+        </tr>
+        <tr>
+            <td class="left">Remove earnings/revision</td>
+            <td>1.477</td>
+            <td class="positive">+0.032</td>
+        </tr>
+        <tr>
+            <td class="left">Remove short-interest/borrow</td>
+            <td>1.508</td>
+            <td class="positive">+0.063</td>
+        </tr>
+        <tr>
+            <td class="left">Remove industry-return</td>
+            <td>1.442</td>
+            <td>&minus;0.003</td>
+        </tr>
+    </tbody>
+</table>
+
+<figure>
+    <img src="../outputs/figures/feature_ablation.png" alt="Feature ablation impact">
+    <figcaption><strong>Figure 9.</strong> Feature-group ablation impact on net Sharpe ratio at $250M AUM. The return/reversal group is overwhelmingly the most important; its removal destroys the strategy entirely. Notably, removing earnings/revision and short-interest/borrow features marginally <em>improves</em> performance.</figcaption>
+</figure>
+
+<p>
+The ablation results reveal several important findings:
+</p>
+
+<ol>
+    <li><strong>Return/reversal is the core alpha.</strong> Its removal collapses the Sharpe from 1.445 to &minus;1.114, confirming that short-term mean reversion is the dominant driver of overnight return predictability. Without it, the remaining features lack sufficient signal to overcome transaction costs.</li>
+
+    <li><strong>Risk/liquidity/size contributes meaningful edge.</strong> Removing this group reduces the Sharpe by 0.301, indicating that the preference for lower-volatility, more liquid names and the Amihud illiquidity tilt provide genuine diversification benefit.</li>
+
+    <li><strong>Fundamentals add marginal value.</strong> The 0.038 Sharpe reduction upon removal is modest, suggesting that quality and value features provide a small but positive contribution, likely by filtering out low-quality reversal candidates.</li>
+
+    <li><strong>Earnings/revision features are net-neutral to slightly harmful.</strong> Removing this group <em>improves</em> the Sharpe by 0.032. This counterintuitive result may arise because the earnings-revision signals generate turnover in names approaching their earnings window (where the exclusion filter applies), creating unnecessary churn. Alternatively, the revision signals may be partially redundant with the fundamental scores and introduce noise.</li>
+
+    <li><strong>Short-interest/borrow features are net-harmful.</strong> Their removal improves the Sharpe by 0.063. This is a striking result. One interpretation is that the short-interest features steer the model toward heavily shorted names on the short side, which incur higher borrow costs that outweigh any alpha benefit. The borrow-cost drag on Tier B and C names may more than offset the predictive value of high short interest as a negative signal.</li>
+
+    <li><strong>Industry-return is effectively neutral.</strong> The 0.003 change is within noise.</li>
+</ol>
+
+<p>
+These findings suggest that a simpler model using only groups 1&ndash;3 (return/reversal, risk/liquidity, and fundamentals) might achieve a marginally higher net Sharpe. However, the full model was retained for the final submission because the additional groups may provide diversification value in out-of-sample regimes not captured by the backtest, and because the improvement from removal is small enough to be within estimation noise.
+</p>
+
+<h3 id="sec5-6">5.6 Weak Regime Analysis</h3>
+
+<p>
+The years 2010, 2022, and 2024 represent the weakest IC regimes in the sample. A natural question is whether these regimes share common characteristics that might serve as an early-warning indicator.
+</p>
+
+<p>
+In 2010, the post-financial-crisis recovery featured strong momentum and regime shifts that disrupted the reversal signal. In 2022, the abrupt transition from a low-rate to a high-rate environment altered cross-sectional factor loadings. In 2024, the signal approaches zero, which may reflect either genuine alpha decay as the overnight anomaly becomes more widely known, or a temporary regime in which the reversal pattern is muted by macro-driven correlation. Without additional out-of-sample years beyond 2024, it is not possible to distinguish between these explanations. This ambiguity is an inherent limitation of any backtest-based evaluation and underscores the importance of live monitoring and regime-detection overlays in a production setting.
+</p>
+
+<!-- ================================================================== -->
+<!--              6. PORTFOLIO CONSTRUCTION & PERFORMANCE               -->
+<!-- ================================================================== -->
+<h2 id="sec6"><span class="section-num">6</span> Portfolio Construction and Performance</h2>
+
+<h3 id="sec6-1">6.1 Basket Sizing and Construction Rules</h3>
+
+<p>
+The portfolio is constructed each evening at the market close by ranking the eligible universe by alpha score and selecting the top 3% (long) and bottom 3% (short) of names. A minimum of 15 names per side is enforced to ensure adequate diversification. Within each side, positions are equal-weighted, subject to a 5% ADV20 participation cap per name. Dollar neutrality is maintained: the total long notional equals the total short notional on each rebalance.
+</p>
+
+<p>
+In practice, the portfolio averages approximately 25 names per side. The equal-weight construction is intentional: while signal-weighted portfolios might concentrate capital in the highest-alpha names, they also concentrate risk and increase sensitivity to single-stock outliers. Equal weighting provides a more robust baseline and simplifies the attribution of returns to the alpha signal rather than to position-sizing skill.
+</p>
+
+<h3 id="sec6-2">6.2 Headline Performance at Three AUM Levels</h3>
+
+<table>
+    <caption>Table 7. Headline performance summary, 2010&ndash;2024</caption>
+    <thead>
+        <tr>
+            <th>Metric</th>
+            <th>$50M</th>
+            <th>$250M</th>
+            <th>$1B</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="left">Net annualised return</td>
+            <td>6.66%</td>
+            <td><strong>7.31%</strong></td>
+            <td>3.50%</td>
+        </tr>
+        <tr>
+            <td class="left">Annualised volatility</td>
+            <td>5.03%</td>
+            <td>4.97%</td>
+            <td>2.69%</td>
+        </tr>
+        <tr>
+            <td class="left">Net Sharpe ratio</td>
+            <td>1.308</td>
+            <td><strong>1.445</strong></td>
+            <td>1.293</td>
+        </tr>
+        <tr>
+            <td class="left">Gross Sharpe ratio</td>
+            <td>3.539</td>
+            <td>3.112</td>
+            <td>2.321</td>
+        </tr>
+        <tr>
+            <td class="left">Maximum drawdown</td>
+            <td class="negative">&minus;13.82%</td>
+            <td class="negative">&minus;10.19%</td>
+            <td class="negative">&minus;5.56%</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>
+The $250M AUM level achieves the highest net Sharpe (1.445), representing a favourable balance between signal concentration and cost efficiency. At $50M, the Sharpe is slightly lower (1.308) despite the lower cost burden because the smaller universe of investable names at this scale reduces diversification. At $1B, the participation cap constrains position sizes and forces basket expansion, diluting alpha concentration and compressing both returns and volatility.
+</p>
+
+<figure>
+    <img src="../outputs/figures/strategy_cumulative.png" alt="Cumulative returns">
+    <figcaption><strong>Figure 3.</strong> Cumulative net return at three AUM levels ($50M, $250M, $1B), 2010&ndash;2024. The $250M curve achieves the best risk-adjusted performance, while $1B shows reduced return with lower volatility.</figcaption>
+</figure>
+
+<h3 id="sec6-3">6.3 Gross-to-Net Decomposition</h3>
+
+<p>
+The cost structure follows the brief's Table 6.1: commission at 0.5 bps per leg (1 bp round-trip), slippage at 1.5 bps per leg (3 bps round-trip), for a total non-borrow cost of 4 bps per round-trip. Borrow costs are applied per the tiered proxy described in Section 4.
+</p>
+
+<table>
+    <caption>Table 8. Cost drag decomposition (Sharpe units)</caption>
+    <thead>
+        <tr>
+            <th class="left">Cost component</th>
+            <th>$50M</th>
+            <th>$250M</th>
+            <th>$1B</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="left">Commission</td>
+            <td>0.501</td>
+            <td>0.378</td>
+            <td>0.233</td>
+        </tr>
+        <tr>
+            <td class="left">Slippage</td>
+            <td>1.503</td>
+            <td>1.137</td>
+            <td>0.704</td>
+        </tr>
+        <tr>
+            <td class="left">Borrow</td>
+            <td>0.227</td>
+            <td>0.152</td>
+            <td>0.091</td>
+        </tr>
+        <tr style="font-weight:700; border-top: 2px solid #333;">
+            <td class="left">Total drag</td>
+            <td>2.231</td>
+            <td>1.667</td>
+            <td>1.028</td>
+        </tr>
+        <tr>
+            <td class="left">Gross Sharpe</td>
+            <td>3.539</td>
+            <td>3.112</td>
+            <td>2.321</td>
+        </tr>
+        <tr>
+            <td class="left">Net Sharpe</td>
+            <td>1.308</td>
+            <td>1.445</td>
+            <td>1.293</td>
+        </tr>
+    </tbody>
+</table>
+
+<figure>
+    <img src="../outputs/figures/gross_to_net_waterfall.png" alt="Gross-to-net waterfall">
+    <figcaption><strong>Figure 4.</strong> Waterfall chart showing the gross-to-net Sharpe decomposition by cost component. Slippage is the dominant source of drag at all AUM levels, reflecting the high turnover inherent in a daily-rebalance overnight strategy.</figcaption>
+</figure>
+
+<p>
+The most striking feature of the cost decomposition is the dominance of slippage. At $250M, slippage consumes 1.137 Sharpe units&mdash;more than three times the commission drag and seven times the borrow drag. This is a direct consequence of the strategy's daily rebalancing: every position is entered at the close and exited at the open, resulting in near-100% daily turnover. Any practical deployment of this strategy would need to address slippage reduction, potentially through algorithmic execution at the close auction (MOC orders), netting of positions that persist across consecutive days, or partial rebalancing to reduce turnover.
+</p>
+
+<h3 id="sec6-4">6.4 Stress Windows and Drawdowns</h3>
+
+<figure>
+    <img src="../outputs/figures/drawdown_250m.png" alt="Drawdown chart at $250M">
+    <figcaption><strong>Figure 10.</strong> Underwater (drawdown) chart at $250M AUM, 2010&ndash;2024. The deepest drawdown (&minus;10.19%) occurs in 2010, coinciding with the negative-IC regime. Subsequent drawdowns are shallower and shorter-lived.</figcaption>
+</figure>
+
+<p>
+The maximum drawdown at $250M is &minus;10.19%, which is moderate for a long-short equity strategy and reflects the benefit of dollar neutrality and overnight holding. The strategy's worst performance period varies by AUM but generally coincides with the early sample (2010, when the alpha model generates negative IC) and the late sample (2024, when signal decay is evident).
+</p>
+
+<p>
+Notably, the strategy performed exceptionally well during several market stress episodes. In 2020, despite extreme market volatility during the COVID-19 sell-off, the strategy returned 15.53% at $250M (Sharpe 1.557). In 2022, during the bear market and rate-hiking cycle, the strategy posted 32.24% (Sharpe 3.525)&mdash;its best year by a wide margin. The strong 2022 performance, despite negative IC, suggests that the strategy profits from volatility-driven reversal opportunities that intensify during market stress: sharp intraday sell-offs create overnight reversal opportunities in the cross-section.
+</p>
+
+<!-- ================================================================== -->
+<!--              7. ROBUSTNESS                                         -->
+<!-- ================================================================== -->
+<h2 id="sec7"><span class="section-num">7</span> Robustness</h2>
+
+<h3 id="sec7-1">7.1 Lo's Autocorrelation Correction</h3>
+
+<p>
+Daily strategy returns in a long-short overnight portfolio may exhibit serial autocorrelation due to persistent factor exposures and gradual portfolio turnover. Following Lo (2002), the annualised Sharpe ratio should be adjusted for autocorrelation to avoid overstating risk-adjusted performance. The standard annualisation formula (Sharpe<sub>annual</sub> = Sharpe<sub>daily</sub> &times; &radic;252) assumes i.i.d. returns; positive autocorrelation inflates the annualised figure, while negative autocorrelation deflates it.
+</p>
+
+<p>
+In the present strategy, the daily return autocorrelation is modestly positive at short lags (consistent with the reversal signal carrying over for 1&ndash;2 days) and negligible at longer lags. The Lo-corrected Sharpe at $250M is estimated to be approximately 5&ndash;10% below the reported 1.445, placing it in the range of 1.30&ndash;1.37. While this adjustment reduces the headline figure, it does not change the qualitative conclusion that the strategy delivers meaningful risk-adjusted returns after costs.
+</p>
+
+<h3 id="sec7-2">7.2 Year-by-Year Analysis</h3>
+
+<figure>
+    <img src="../outputs/figures/yearly_sharpe_250m.png" alt="Yearly Sharpe at $250M">
+    <figcaption><strong>Figure 5.</strong> Annual net Sharpe ratio at $250M AUM, 2010&ndash;2024. The strategy is profitable in 13 of 15 years, with losses confined to 2010 and 2024.</figcaption>
+</figure>
+
+<table>
+    <caption>Table 9. Year-by-year performance at $250M AUM</caption>
+    <thead>
+        <tr>
+            <th>Year</th>
+            <th>Net Return</th>
+            <th>Net Sharpe</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>2010</td><td class="negative">&minus;10.09%</td><td class="negative">&minus;3.094</td></tr>
+        <tr><td>2011</td><td class="positive">21.39%</td><td class="positive">3.474</td></tr>
+        <tr><td>2012</td><td class="positive">6.70%</td><td class="positive">2.333</td></tr>
+        <tr><td>2013</td><td class="positive">5.61%</td><td class="positive">2.307</td></tr>
+        <tr><td>2014</td><td class="positive">2.57%</td><td>0.712</td></tr>
+        <tr><td>2015</td><td class="positive">3.91%</td><td>1.575</td></tr>
+        <tr><td>2016</td><td class="positive">3.30%</td><td>1.410</td></tr>
+        <tr><td>2017</td><td class="positive">1.64%</td><td>0.804</td></tr>
+        <tr><td>2018</td><td class="positive">3.08%</td><td>0.808</td></tr>
+        <tr><td>2019</td><td class="positive">12.30%</td><td class="positive">3.206</td></tr>
+        <tr><td>2020</td><td class="positive">15.53%</td><td>1.557</td></tr>
+        <tr><td>2021</td><td class="positive">10.83%</td><td>1.755</td></tr>
+        <tr><td>2022</td><td class="positive">32.24%</td><td class="positive">3.525</td></tr>
+        <tr><td>2023</td><td class="positive">9.70%</td><td>1.768</td></tr>
+        <tr><td>2024</td><td class="negative">&minus;2.61%</td><td class="negative">&minus;0.434</td></tr>
+    </tbody>
+</table>
+
+<p>
+The year-by-year analysis reveals several patterns warranting discussion:
+</p>
+
+<p>
+<strong>The 2010 loss (&minus;10.09%, Sharpe &minus;3.094)</strong> is the strategy's worst year by a large margin. As discussed in Section 5.4, the alpha model's IC is negative in 2010, meaning the model's predictions are actively inversely correlated with realised returns. This is attributable to the post-crisis momentum regime: the reversal features that dominate the alpha score (Table 6 confirms a 2.559 Sharpe-unit drop upon their removal) predicted mean reversion in stocks that instead exhibited persistent momentum as they recovered from the 2008&ndash;2009 lows. A walk-forward model trained on limited pre-2010 data has insufficient evidence to detect this regime shift.
+</p>
+
+<p>
+<strong>The 2022 banner year (32.24%, Sharpe 3.525)</strong> deserves scrutiny precisely because it is so strong. The elevated-volatility environment during the 2022 bear market amplifies overnight return dispersion, creating wider cross-sectional spreads for the reversal signal to exploit. This is consistent with the academic finding that reversal strategies perform best in high-volatility regimes (Nagel, 2012). However, this also implies that the strategy's full-sample Sharpe benefits from the inclusion of an unusually favourable year, and the risk of regime-dependent performance should be acknowledged.
+</p>
+
+<p>
+<strong>The 2024 loss (&minus;2.61%, Sharpe &minus;0.434)</strong> combined with the near-zero IC (0.005) raises the possibility of secular alpha decay. As the overnight return anomaly has received increasing academic and practitioner attention, arbitrage activity may have compressed the available premium. However, a single year of marginal negative performance is insufficient evidence to declare the signal exhausted, and the 2023 result (9.70%, Sharpe 1.768) is inconsistent with a monotonic decay narrative.
+</p>
+
+<h3 id="sec7-3">7.3 Capacity Constraints</h3>
+
+<p>
+The strategy's capacity is constrained by two mechanisms: (a) the 5% ADV20 participation cap, which limits the dollar size of individual positions, and (b) the basket-expansion effect, which dilutes alpha concentration as the strategy is forced to trade deeper into the ranked universe to deploy capital.
+</p>
+
+<p>
+At $50M, the average position size is approximately $1M per name, well within the 5% ADV cap for even mid-cap names. At $250M, the average position size rises to $5M per name, which begins to approach the participation cap for smaller names in the eligible universe. At $1B, the average position size of $20M per name exceeds the 5% ADV cap for a meaningful fraction of names, forcing the portfolio to expand from ~25 to ~50 names per side and diluting the alpha concentration.
+</p>
+
+<p>
+The empirical evidence supports this analysis: the gross Sharpe declines monotonically from 3.539 ($50M) to 3.112 ($250M) to 2.321 ($1B), while the net Sharpe peaks at $250M due to the interplay between alpha dilution and cost amortisation. The strategy's practical capacity is estimated at $200M&ndash;$500M, beyond which the Sharpe degrades below a level that justifies the operational complexity of a daily-rebalance overnight strategy.
+</p>
+
+<h3 id="sec7-4">7.4 Honest Assessment of Borrow Assumptions</h3>
+
+<p>
+The borrow-cost proxy is a known weakness of the analysis. Several factors may cause the true borrow cost to differ materially from the proxy:
+</p>
+
+<ul>
+    <li><strong>Rate asymmetry:</strong> The proxy assumes three discrete tiers; in practice, borrow rates are continuous and can spike intra-day during short squeezes or around corporate events.</li>
+    <li><strong>Locate failures:</strong> The proxy assumes that all names are borrowable at the quoted rate; in reality, some names may be impossible to locate overnight, forcing the strategy to skip positions or accept unfavourable terms.</li>
+    <li><strong>Counterparty variation:</strong> Borrow rates depend on the fund's prime brokerage relationships, AUM, and track record. A new fund would likely face higher rates than an established one.</li>
+    <li><strong>Temporal dynamics:</strong> The bimonthly publication lag on short-interest data means that the borrow tier classification may be stale by the time it is used, particularly during rapidly evolving short-squeeze episodes (e.g., the GameStop episode in January 2021).</li>
+</ul>
+
+<p>
+To provide a rough sensitivity analysis: if the Tier C rate were doubled from 800 bps to 1,600 bps p.a., the incremental drag at $250M would be approximately 0.05&ndash;0.10 Sharpe units, reducing the net Sharpe from 1.445 to roughly 1.35&ndash;1.40. While non-trivial, this does not threaten the strategy's viability. The more serious risk is the combination of higher rates <em>and</em> locate failures, which could force the strategy to skip its best short-side alpha opportunities entirely.
+</p>
+
+<!-- ================================================================== -->
+<!--              8. LIMITATIONS AND CONCLUSION                         -->
+<!-- ================================================================== -->
+<h2 id="sec8"><span class="section-num">8</span> Limitations and Conclusion</h2>
+
+<h3>8.1 Key Limitations</h3>
+
+<ol>
+    <li><strong>Execution assumption:</strong> The strategy assumes execution at the closing auction and at the opening auction with fixed slippage. In practice, the closing auction is competitive, and the opening auction carries wider spreads and higher impact, particularly for less liquid names. The 1.5 bps slippage per leg may understate true costs during periods of market stress or low liquidity.</li>
+
+    <li><strong>Borrow-cost proxy:</strong> As discussed in Section 7.4, the deterministic tier proxy is a simplification. No external validation dataset was available to calibrate or stress-test the assumed rates.</li>
+
+    <li><strong>Alpha decay:</strong> The declining IC trend from 2022 onward (and the near-zero IC of 0.005 in 2024) raises the possibility that the overnight reversal premium is being arbitraged away. The strategy should be monitored for continued signal degradation.</li>
+
+    <li><strong>Single-factor concentration:</strong> The ablation analysis demonstrates that nearly all alpha derives from the return/reversal group. If this specific factor experiences a structural regime change (e.g., due to increased market-maker competition or changes in market microstructure), the strategy would lose its primary edge.</li>
+
+    <li><strong>No live validation:</strong> The entire analysis is conducted in backtest. No live trading data or paper-trading results are available to validate the implementation assumptions.</li>
+
+    <li><strong>LightGBM underperformance:</strong> The failure of the gradient-boosted model to improve upon the linear baseline, while honest, may reflect suboptimal hyperparameter tuning or insufficient feature engineering for the nonlinear model rather than a fundamental limitation of tree-based methods.</li>
+</ol>
+
+<h3>8.2 Conclusion</h3>
+
+<p>
+The C2O overnight equity strategy delivers a net Sharpe ratio of 1.445 at the base-case $250M AUM level over a 15-year backtest period, driven primarily by short-term return reversal features that predict cross-sectional overnight return dispersion. The strategy is profitable in 13 of 15 years, with losses confined to the post-crisis momentum regime of 2010 and the low-signal environment of 2024.
+</p>
+
+<p>
+Transaction costs are the primary constraint on performance: slippage alone consumes 1.137 Sharpe units at $250M, highlighting the importance of execution quality in any practical deployment. The strategy's capacity is estimated at $200M&ndash;$500M, beyond which participation-rate constraints dilute alpha concentration.
+</p>
+
+<p>
+The machine-learning comparison between the linear model and LightGBM yields a pedagogically important result: in a low-signal, high-cost environment such as overnight equity trading, the marginal benefit of nonlinear modelling is dominated by the cost structure and feature quality. This finding reinforces the principle that in applied quantitative finance, engineering robust features and controlling costs are more important than increasing model complexity.
+</p>
+
+<p>
+The declining IC in the later years of the sample warrants monitoring. Whether this represents genuine alpha decay or a transient regime remains an open question that can only be resolved with additional out-of-sample data. In the meantime, the strategy offers a compelling case study in the design, implementation, and critical evaluation of a systematic overnight equity strategy.
+</p>
+
+<!-- ================================================================== -->
+<!--                         REFERENCES                                 -->
+<!-- ================================================================== -->
+<div class="footnote">
+    <h3>References</h3>
+    <p>Cliff, M., Cooper, M., and Gulen, H. (2008). Return differences between trading and non-trading hours: Like night and day. <em>Working Paper</em>.</p>
+    <p>Lo, A. W. (2002). The statistics of Sharpe ratios. <em>Financial Analysts Journal</em>, 58(4), 36&ndash;52.</p>
+    <p>Nagel, S. (2012). Evaporating liquidity. <em>Review of Financial Studies</em>, 25(7), 2005&ndash;2039.</p>
+    <p>Piotroski, J. D. (2000). Value investing: The use of historical financial statement information to separate winners from losers. <em>Journal of Accounting Research</em>, 38, 1&ndash;41.</p>
+    <p>Grinold, R. C. and Kahn, R. N. (2000). <em>Active Portfolio Management</em>. 2nd ed. McGraw-Hill.</p>
+</div>
+
+<!-- ================================================================== -->
+<!--                         APPENDIX                                   -->
+<!-- ================================================================== -->
+<h2>Appendix A: QuantStats Report</h2>
+<p>
+A full QuantStats HTML report for the $250M AUM level is generated separately and available at <code>outputs/quantstats_250m.html</code>. It contains additional diagnostics including monthly return heatmaps, rolling beta to the S&amp;P 500, and tail-risk metrics (VaR, CVaR). The QuantStats report confirms the low market beta of the strategy (consistent with dollar neutrality) and the absence of significant skewness in the return distribution.
+</p>
+
+<h2>Appendix B: Reproducibility</h2>
+<p>
+All results are generated from frozen pipeline outputs stored in the <code>outputs/</code> and <code>outputs/report_ready/</code> directories. The return reconciliation (5,469,968 stock-days, zero failures) and the point-in-time promotion audit provide confidence that the data pipeline is free of look-ahead bias. No data from 2025 or later is used in any computation.
+</p>
+
+</div><!-- /container -->
+</body>
+</html>
